@@ -1,6 +1,7 @@
 /*
  * TODO
- * Syncroniser les Couleurs;
+ * Syncroniser les params du Dat.GUI avec la fonction randomize();
+ * Ajouter la fonction Export();
  * Ajouter la fonction Load();
  * OnFrame Event -> Animate bezier
  * Améliorer la génération des béziers
@@ -55,21 +56,20 @@ var params = {
 var gui = new dat.GUI();
 
 var grid = gui.addFolder('Grid');
-grid.add( params, 'width_gap', 10, 300 ).step( 1 ).onChange( function( value ) {
+var gui_width_grid = grid.add( params, 'width_gap', 10, 300 ).step( 1 ).onChange( function( value ) {
 	width_gap = value;
 	w_margin = (window.innerWidth-width_gap*4)/2;
 	Update();
-}).listen();
-
+});
 grid.add( params, 'height_gap', 10, 300 ).step( 1 ).onChange( function( value ) {
 	height_gap = value;
 	h_margin = (window.innerHeight-height_gap*4)/2-50;
 	Update();
-}).listen();
+});
 grid.add( params, 'rect_size', 1, 30 ).step( 1 ).onChange( function( value ) {
 	rect_size = value;
 	Update();
-}).listen();
+});
 grid.add(params, 'type', [ 'square', 'circle'] ).onChange( function(value){
 	if (params.type === 'circle'){
 		circle = true;
@@ -77,35 +77,34 @@ grid.add(params, 'type', [ 'square', 'circle'] ).onChange( function(value){
 		circle = false;
 	}
 	Update();
-}).listen();
+});
 grid.addColor( params, 'color').onChange( function( value ) {
 	grid_color = value;
 	Update();
-}).listen();
-
+});
 grid.add( params, 'display_grid').onChange( function( value ) {
 	display_grid = value;
 	Update();
-}).listen();
+});
 //grid.open();
 
 var bezier = gui.addFolder('Bezier');
-bezier.add( params, 'nb_bezier', 0, 100 ).step( 1 ).onChange( function( value ) {
+bezier.add( params, 'nb_bezier', 1, 100 ).step( 1 ).onChange( function( value ) {
 	nb_bezier = value;
 	Update();
-}).listen();
+});
 bezier.add( params, 'smooth', -10, 20 ).step( 1 ).onChange( function( value ) {
 	smooth = value;
 	Update();
-}).listen();
+});
 bezier.add( params, 'strokeWidth', 1, 31 ).step( 1 ).onChange( function( value ) {
 	strokeWidth = value;
 	Update();
-}).listen();
+});
 bezier.add( params, 'debug').onChange( function( value ) {
 	bezier_debug = value;
 	Update();
-}).listen();
+});
 bezier.open();
 
 gui.add( params, 'load');
@@ -115,38 +114,40 @@ gui.add( params, 'export');
 /**********************************************/
 
 function randomize(){
-	width_gap = Math.floor(Math.random() * (200 - 10 + 1)) + 10;	
-	params.width_gap = width_gap;
 	
+	width_gap = Math.floor(Math.random() * (200 - 10 + 1)) + 10;
 	height_gap = Math.floor(Math.random() * (200 - 100 + 1)) + 10;
-	params.height_gap = height_gap;
-	
 	rect_size = Math.floor(Math.random() * (30 - 1 + 1)) + 1;
-	params.rect_size = rect_size;
 	
 	circle = Math.random() >= 0.5;
-	params.type = circle == true ? "circle" : "square"
 	
 	grid_color = '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
-	params.grid_color = grid_color;
-	//console.log(params.grid_color);
-	//la valeur est bien enregistré mais ne mais pas à jour 'color' peut être parse que .listen() n'existe pas pour addColor();
-	
+
 	smooth = Math.floor(Math.random() * (30 - -10 + 1)) + -10;
-	params.smooth = smooth;
-	
 	strokeWidth = Math.floor(Math.random() * (31 - 1 + 1)) + 1;
-	params.strokeWidth = strokeWidth;
-	
+
 	w_margin = (window.innerWidth-width_gap*4)/2;
 	h_margin = (window.innerHeight-height_gap*4)/2-50;
 
 	nb_bezier = Math.floor(Math.random() * (30 - 1 + 1)) + 1;
-	params.nb_bezier = nb_bezier;
 	
 	new_array_coord();	
-	Update()	
+	Update()
+	
+  	// Iterate over all controllers
+    //updateDisplay(gui);
 }
+
+//TODO Syncroniser les params du Dat.GUI avec la fonction randomize();
+/*function updateDisplay(gui) {
+	
+    for (var i in gui.__controllers) {
+        gui.__controllers[i].updateDisplay();
+    }
+    for (var f in gui.__folders) {
+        updateDisplay(gui.__folders[f]);
+    }
+}*/
 
 function randCoord(){
 	var x = Math.floor(Math.random() * ((logo_shape.length-1) - 0 + 1)) + 0;
@@ -190,15 +191,57 @@ function onFrame(event) {
 	//console.log(event.delta);
 	
 	//TODO animate bezier
-	//bezier.strokeColor.hue += 1;
+	bezier.strokeColor.hue += 1;*/
 }
+
+//TODO EXPORT TO SVG
+/*var t;
+t = new Tool();
+
+//Listen for "s" to save content as SVG file.
+t.onKeyUp = function(event) {
+	if(event.character == "s") {
+		downloadAsSVG("test.svg");
+	}
+}
+
+var downloadAsSVG = function (fileName) {
+	
+	if(!fileName) {
+		fileName = "paperjs_example.svg"
+	}
+
+	var url = "data:image/svg+xml;utf8," + encodeURIComponent(paper.project.exportSVG({asString:true}));
+
+	var link = document.createElement("a");
+		link.download = fileName;
+		link.href = url;
+		link.click();
+}*/
 
 /**********************************************/
 
 function new_array_coord(){
-		
-	//Amélioration : détecter les béziers qui sont sur le même point
 	
+	//TODO load curve from .json
+    /*
+	$.getJSON('json/bezier.json', function (data) {
+    	data = JSON.parse(data);
+    	project.importJSON(data);
+	});
+    */
+
+	/*var jsonData = {
+		"bezier": [
+		    {"p1":"0,1", "p2":"2,2", "p3": null, "smooth": 0},
+		    {"p1":"0,1", "p2":"0,1", "p3": null, "smooth": 0},
+		    {"p1":"0,1", "p2":"0,1", "p3": null, "smooth": 0}
+		]  
+	}
+	project.importJSON(JSON.stringify(jsonData));*/
+	
+	//Amélioration détecter les béziers qui sont sur le même point
+
 	for(var i=0; i<nb_bezier_max; i++){
 		save_rand_coord.push(new Array());
 		for(var j=0; j<2; j++){
@@ -234,46 +277,18 @@ function draw_grid(){
 
 function draw_typo(){
 	//Load mentalista.svg
-	var typo = paper.project.importSVG("svg/mentalista.svg", function(item) {
+	paper.project.importSVG("svg/mentalista.svg", function(item) {
 		item.position = new Point(w_margin+width_gap*2, h_margin+height_gap*4+80);
-	});
+	})
 	
 	//TODO load svg with symbole
-	//var symbol = new Symbol(typo);
-	//symbol.place(new Point(w_margin+width_gap*2, h_margin+height_gap*4+80));
+	//typo.place(new Point(w_margin+width_gap*2, h_margin+height_gap*4+80));
 }
 
-function load(){
-	
-	//TODO load curve from .json
-	alert('[TODO]');
-	
-	var json;
-	$.getJSON('json/bezier.json', function (data) {
-    	data = JSON.parse(data);
-    	json = project.importJSON(JSON.stringify(data));
-	});
-	console.log(json); //undefined
-	
-	//--Ok---
-	var jsonData = {
-		"bezier": [
-		    {"p1":"0,1", "p2":"2,2", "p3": null, "smooth": 0},
-		    {"p1":"0,1", "p2":"0,1", "p3": null, "smooth": 0},
-		    {"p1":"0,1", "p2":"0,1", "p3": null, "smooth": 0}
-		]  
-	}
-	project.importJSON(JSON.stringify(jsonData));
-	console.log(jsonData);
-}
+function load(){alert('[TODO]');}
 
-function export_logo(){
-	var svg = project.exportSVG({ asString: true });	
-	downloadDataURI({
-		data: 'data:image/svg+xml;base64,' + btoa(svg),
-		filename: 'export.svg'
-	});
-}
+function export_logo(){alert('[TODO]');}
+
 
 /*
 var handleIn = new Point(-width_gap+smooth, 0);

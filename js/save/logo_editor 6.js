@@ -90,7 +90,7 @@ grid.add( params, 'display_grid').onChange( function( value ) {
 //grid.open();
 
 var bezier = gui.addFolder('Bezier');
-bezier.add( params, 'nb_bezier', 0, 100 ).step( 1 ).onChange( function( value ) {
+bezier.add( params, 'nb_bezier', 1, 100 ).step( 1 ).onChange( function( value ) {
 	nb_bezier = value;
 	Update();
 }).listen();
@@ -239,32 +239,29 @@ function draw_typo(){
 	});
 	
 	//TODO load svg with symbole
-	//var symbol = new Symbol(typo);
-	//symbol.place(new Point(w_margin+width_gap*2, h_margin+height_gap*4+80));
+	//typo.place(new Point(w_margin+width_gap*2, h_margin+height_gap*4+80));
 }
 
 function load(){
 	
-	//TODO load curve from .json
 	alert('[TODO]');
 	
-	var json;
+	//TODO load curve from .json
+    /*
 	$.getJSON('json/bezier.json', function (data) {
     	data = JSON.parse(data);
-    	json = project.importJSON(JSON.stringify(data));
+    	project.importJSON(data);
 	});
-	console.log(json); //undefined
-	
-	//--Ok---
-	var jsonData = {
+    */
+
+	/*var jsonData = {
 		"bezier": [
 		    {"p1":"0,1", "p2":"2,2", "p3": null, "smooth": 0},
 		    {"p1":"0,1", "p2":"0,1", "p3": null, "smooth": 0},
 		    {"p1":"0,1", "p2":"0,1", "p3": null, "smooth": 0}
 		]  
 	}
-	project.importJSON(JSON.stringify(jsonData));
-	console.log(jsonData);
+	project.importJSON(JSON.stringify(jsonData));*/
 }
 
 function export_logo(){

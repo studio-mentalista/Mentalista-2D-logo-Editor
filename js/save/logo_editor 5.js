@@ -1,6 +1,7 @@
 /*
  * TODO
  * Syncroniser les Couleurs;
+ * Ajouter la fonction Export();
  * Ajouter la fonction Load();
  * OnFrame Event -> Animate bezier
  * Améliorer la génération des béziers
@@ -90,7 +91,7 @@ grid.add( params, 'display_grid').onChange( function( value ) {
 //grid.open();
 
 var bezier = gui.addFolder('Bezier');
-bezier.add( params, 'nb_bezier', 0, 100 ).step( 1 ).onChange( function( value ) {
+bezier.add( params, 'nb_bezier', 1, 100 ).step( 1 ).onChange( function( value ) {
 	nb_bezier = value;
 	Update();
 }).listen();
@@ -193,12 +194,54 @@ function onFrame(event) {
 	//bezier.strokeColor.hue += 1;
 }
 
+//TODO EXPORT TO SVG
+/*var t;
+t = new Tool();
+
+//Listen for "s" to save content as SVG file.
+t.onKeyUp = function(event) {
+	if(event.character == "s") {
+		downloadAsSVG("test.svg");
+	}
+}
+
+var downloadAsSVG = function (fileName) {
+	
+	if(!fileName) {
+		fileName = "paperjs_example.svg"
+	}
+
+	var url = "data:image/svg+xml;utf8," + encodeURIComponent(paper.project.exportSVG({asString:true}));
+
+	var link = document.createElement("a");
+		link.download = fileName;
+		link.href = url;
+		link.click();
+}*/
+
 /**********************************************/
 
 function new_array_coord(){
-		
-	//Amélioration : détecter les béziers qui sont sur le même point
 	
+	//TODO load curve from .json
+    /*
+	$.getJSON('json/bezier.json', function (data) {
+    	data = JSON.parse(data);
+    	project.importJSON(data);
+	});
+    */
+
+	/*var jsonData = {
+		"bezier": [
+		    {"p1":"0,1", "p2":"2,2", "p3": null, "smooth": 0},
+		    {"p1":"0,1", "p2":"0,1", "p3": null, "smooth": 0},
+		    {"p1":"0,1", "p2":"0,1", "p3": null, "smooth": 0}
+		]  
+	}
+	project.importJSON(JSON.stringify(jsonData));*/
+	
+	//Amélioration détecter les béziers qui sont sur le même point
+
 	for(var i=0; i<nb_bezier_max; i++){
 		save_rand_coord.push(new Array());
 		for(var j=0; j<2; j++){
@@ -239,37 +282,27 @@ function draw_typo(){
 	});
 	
 	//TODO load svg with symbole
-	//var symbol = new Symbol(typo);
-	//symbol.place(new Point(w_margin+width_gap*2, h_margin+height_gap*4+80));
+	//typo.place(new Point(w_margin+width_gap*2, h_margin+height_gap*4+80));
 }
 
-function load(){
-	
-	//TODO load curve from .json
-	alert('[TODO]');
-	
-	var json;
-	$.getJSON('json/bezier.json', function (data) {
-    	data = JSON.parse(data);
-    	json = project.importJSON(JSON.stringify(data));
-	});
-	console.log(json); //undefined
-	
-	//--Ok---
-	var jsonData = {
-		"bezier": [
-		    {"p1":"0,1", "p2":"2,2", "p3": null, "smooth": 0},
-		    {"p1":"0,1", "p2":"0,1", "p3": null, "smooth": 0},
-		    {"p1":"0,1", "p2":"0,1", "p3": null, "smooth": 0}
-		]  
-	}
-	project.importJSON(JSON.stringify(jsonData));
-	console.log(jsonData);
+function load(){alert('[TODO]');}
+
+
+function downloadDataUri(options) {
+	if (!options.url)
+		options.url = "http://download-data-uri.appspot.com/";
+	$('<form method="post" action="' + options.url
+		+ '" style="display:none"><input type="hidden" name="filename" value="'
+		+ options.filename + '"/><input type="hidden" name="data" value="'
+		+ options.data + '"/></form>').appendTo('body').submit().remove();
 }
 
 function export_logo(){
-	var svg = project.exportSVG({ asString: true });	
-	downloadDataURI({
+	//alert('[TODO]');
+	
+	var svg = project.exportSVG({ asString: true });
+	
+	downloadDataUri({
 		data: 'data:image/svg+xml;base64,' + btoa(svg),
 		filename: 'export.svg'
 	});
