@@ -1,15 +1,18 @@
 /*
  * TODO
  * Synchroniser les Couleurs;
+ * Terminaisons des béziers
+ *
  * Ajouter la fonction Load();
  * OnFrame Event -> Animate bezier
- * Enregistrer le logo .svg dans une variable
- * Choisir entre différents algorithmes de génération de bézier !?
- * Terminaisons des béziers
- * Posibilité d'ajouter différentes formes de logo
+ * Enregistrer la typo .svg dans une variable
+ * //Choisir entre différents algorithmes de génération de bézier !? // un avec des courbes plus exacte sur plusieurs points
+ * Option pour exporter en URI pour les devis/factures/lettres/contrats
  */
 
-var logo_shape = [
+var logo_shape;
+
+var old_logo_shape = [
         ["0,1","0,2","0,3"],
   ["1,0","1,1","1,2","1,3","1,4"],
   ["2,0","2,1","2,2","2,3","2,4"],
@@ -17,11 +20,48 @@ var logo_shape = [
         ["4,1","4,2","4,3"]
 ];
 
+var new_logo_shape = [
+        ["0,1","0,2","0,3"],
+  ["1,0","1,1","1,2","1,3","1,4"],
+  ["2,0","2,1","2,2","2,3","2,4"],
+        ["3,1","3,2","3,3"]
+];
+
+var test_logo_shape = [
+        ["0,1","0,2","0,3"],
+  ["1,0","1,1","1,2","1,3","1,4"],
+  ["2,0","2,1","2,2","2,3","2,4"],
+  ["3,0","3,1","3,2","3,3","3,4"],
+  ["4,0","4,1","4,2","4,3","4,4"],
+  ["5,0","5,1","5,2","5,3","5,4"],
+  ["6,0","6,1","6,2","6,3","6,4"],
+        ["7,1","7,2","7,3"]
+];
+
+logo_shape = old_logo_shape; //choisir la forme de base
+
+var logo_width,logo_height;
+
+function logo_h(){
+	logo_height = logo_shape.length-1;
+	return logo_height
+}
+function logo_w(){
+	var max_lenght = 0;
+	for (var i=0; i < logo_shape.length; i++){
+		if (max_lenght < logo_shape[i].length){
+			max_lenght = logo_shape[i].length;
+		}
+	}
+	logo_width = max_lenght-1;
+	return logo_width;
+}
+
 var width_gap = 100,
 	height_gap = 60,
 	rect_size = 10,
-	w_margin = (window.innerWidth-width_gap*4)/2, // TODO changer le 4 et le mettre dans une variable
-	h_margin = (window.innerHeight-height_gap*4)/2-50,
+	w_margin = (window.innerWidth-width_gap*logo_w())/2,
+	h_margin = (window.innerHeight-height_gap*logo_h())/2-50,
 	circle = false,
 	grid_color = '#ae00ff',
 	display_grid = true;
@@ -41,6 +81,7 @@ var save_rand_coord = new Array();
 
 //DAT.GUI
 var params = {
+	form: 'old',
 	width_gap : width_gap,
 	height_gap: height_gap,
 	rect_size:  rect_size,
@@ -58,16 +99,32 @@ var params = {
 
 var gui = new dat.GUI();
 
+
 var grid = gui.addFolder('Grid');
+grid.add(params, 'form', [ 'old', 'new', 'test'] ).onChange( function(value){
+	
+	if (params.form === 'old'){
+		logo_shape = old_logo_shape;
+	} else if (params.form === 'new') {
+		logo_shape = new_logo_shape;
+	} else if (params.form === 'test') {
+		logo_shape = test_logo_shape;
+	}
+	w_margin = (window.innerWidth-width_gap*logo_w())/2;
+	h_margin = (window.innerHeight-height_gap*logo_h())/2-50;
+	new_array_coord();
+	Update();
+	
+}).listen();
 grid.add( params, 'width_gap', 10, 300 ).step( 1 ).onChange( function( value ) {
 	width_gap = value;
-	w_margin = (window.innerWidth-width_gap*4)/2;
+	w_margin = (window.innerWidth-width_gap*logo_w())/2;
 	Update();
 }).listen();
 
 grid.add( params, 'height_gap', 10, 300 ).step( 1 ).onChange( function( value ) {
 	height_gap = value;
-	h_margin = (window.innerHeight-height_gap*4)/2-50;
+	h_margin = (window.innerHeight-height_gap*logo_h())/2-50;
 	Update();
 }).listen();
 grid.add( params, 'rect_size', 1, 30 ).step( 1 ).onChange( function( value ) {
@@ -144,8 +201,8 @@ function randomize(){
 	strokeWidth = Math.floor(Math.random() * (31 - 1 + 1)) + 1;
 	params.strokeWidth = strokeWidth;
 	
-	w_margin = (window.innerWidth-width_gap*4)/2;
-	h_margin = (window.innerHeight-height_gap*4)/2-50;
+	w_margin = (window.innerWidth-width_gap*logo_w())/2;
+	h_margin = (window.innerHeight-height_gap*logo_h())/2-50;
 
 	nb_bezier = Math.floor(Math.random() * (30 - 1 + 1)) + 1;
 	params.nb_bezier = nb_bezier;
@@ -167,14 +224,15 @@ window.load = Init();
 
 //RESIZE CLIENT
 window.onresize = function() {
-	w_margin = (window.innerWidth-width_gap*4)/2;
-	h_margin = (window.innerHeight-height_gap*4)/2-50;
+	w_margin = (window.innerWidth-width_gap*logo_w())/2;
+	h_margin = (window.innerHeight-height_gap*logo_h())/2-50;
 	Update();
 };
 
 function Init(){
-	new_array_coord()
+	new_array_coord();
 	Update();
+	//svg_to_uri();
 };
 
 function Update(){
@@ -242,12 +300,12 @@ function draw_grid(){
 function draw_typo(){
 	//Load mentalista.svg
 	var typo = paper.project.importSVG("svg/mentalista.svg", function(item) {
-		item.position = new Point(w_margin+width_gap*2, h_margin+height_gap*4+80);
+		item.position = new Point(w_margin+width_gap*(logo_w()/2), h_margin+height_gap*logo_h()+80);
 	});
 	
 	//TODO load svg with symbole/item
 	//var symbol = new Symbol(typo);
-	//symbol.place(new Point(w_margin+width_gap*2, h_margin+height_gap*4+80));
+	//symbol.place(new Point(w_margin+width_gap*(logo_w()/2), h_margin+height_gap*logo_h()+80));
 }
 
 function load(){
@@ -308,6 +366,11 @@ function load(){
 			}*/
 		});
 	};
+}
+
+function svg_to_uri(){
+	var svg_to_uri = project.exportSVG({ asString: true });
+	$("body").text(svg_to_uri);
 }
 
 function export_logo(){
@@ -411,14 +474,30 @@ function draw_bezier(p1,p2,orientation){
 	);
 	var p2_segment = new Segment(p2_point, handleIn, null);
 	
+	//addStrokes(p1_point,0,0);
+	
 	bezier = new Path(p1_segment, p2_segment);
 	bezier.strokeColor = 'black';
 	bezier.strokeWidth = strokeWidth;
+	
+	//addStrokes(p2_point, 0,1);
 	
 	if(bezier_debug == true){
 		bezier.fullySelected = true;
 	}
 }
+
+//TERMINAISON DES BEZIERS
+/*var strokeEnds = 6;
+
+function addStrokes(point, delta, id) {
+	
+	var a = strokeEnds * 2 + 1;
+
+	for(var i = 0; i < strokePoints; i++) {
+		bezier.insert(id, new Path.Circle(point, 50));
+	}
+}*/
 
 //Première fonction draw_bezier();
 /*function draw_bezier(p1,p2){
