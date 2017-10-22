@@ -91,6 +91,13 @@ grid.add( params, 'display_grid').onChange( function( value ) {
 //grid.open();
 
 var bezier = gui.addFolder('Bezier');
+
+/*var bezier_config = bezier.addFolder('Bezier Config');
+bezier_config.add( params, 'nb_bezier', 0, 100 ).step( 1 ).onChange( function( value ) {
+	nb_bezier = value;
+	Update();
+}).listen();*/
+
 bezier.add( params, 'nb_bezier', 0, 100 ).step( 1 ).onChange( function( value ) {
 	nb_bezier = value;
 	Update();
@@ -140,8 +147,10 @@ function Update(){
 	//draw_bezier("0,2","1,1",1);
 	
 	//draw_bezier("2,2","1,1",1);
-	draw_bezier("2,0","1,1",0);
+	//draw_bezier("2,0","1,1",0);
 	
+	draw_path("2,0","1,1",0);
+
 	//draw_bezier("0,0","2,2",0);
 		
 	if (display_grid == true){
@@ -149,6 +158,80 @@ function Update(){
 	}
 };
 
+function draw_path(p1,p2,orientation){
+	
+	var handleIn,handleOut;
+
+	path = new Path();
+	path.fillColor = {
+		hue: 360,
+		saturation: 1,
+		brightness: 1,
+	};
+
+	/*gradient: {
+        stops: [['yellow', 0.05], ['red', 0.2], ['black', 1]],
+        radial: true
+    },
+    origin: path.position,
+    destination: path.bounds.rightCenter*/
+
+	var coord1 = p1.split(",");
+	var coord2 = p2.split(",");
+
+	var p1_point = new Point(
+		w_margin+width_gap*parseInt(coord1[1]),
+		h_margin+height_gap*parseInt(coord1[0])
+	);
+
+	var p1_point_bis = new Point(
+		w_margin+width_gap*parseInt(0),
+		h_margin+height_gap*parseInt(1)
+	);
+
+
+	var p2_point = new Point(
+		(w_margin+width_gap*parseInt(coord2[1]))-rect_size/2,
+		(h_margin+height_gap*parseInt(coord2[0]))-rect_size/2
+	);
+
+	var p3_point = new Point(
+		(w_margin+width_gap*parseInt(coord2[1]))-rect_size/2,
+		(h_margin+height_gap*parseInt(coord2[0]))+rect_size/2
+	);
+
+
+	
+	handleOut = new Point(-rect_size/2+smooth_width/20,-height_gap+smooth_height);
+	handleOut2 = new Point(rect_size/2-smooth_width/20,-height_gap+smooth_height);
+	handleIn = new Point(-width_gap+smooth_width,0);
+
+	var p1_segment = new Segment(p1_point, null, handleOut);
+
+	path.add(p1_segment);
+
+	var p2_segment = new Segment(p2_point, handleIn, null);
+	
+	path.add(p2_segment);
+	
+	//path.add(p2_point);
+
+	var p3_segment = new Segment(p3_point, null, handleIn);
+	path.add(p3_segment);
+
+	var p4_segment = new Segment(p1_point, handleOut2, null);
+	path.add(p4_segment);
+
+	//path.add(p1_point);
+
+	//path.smooth();
+	if(bezier_debug == true){
+		//path.fullySelected = true;
+	}
+
+	path.closed = true;
+	//alert("yo");
+}
 function draw_bezier(p1,p2,orientation){
 	
 	var coord1 = p1.split(",");
@@ -249,15 +332,6 @@ function draw_bezier(p1,p2,orientation){
 		bezier.fullySelected = true;
 	}
 }
-
-/*function onFrame(event) {
-	//console.log(event.count);
-	//console.log(event.time);
-	//console.log(event.delta);
-	
-	//TODO animate bezier
-	//bezier.strokeColor.hue += 1;
-}*/
 
 /**********************************************/
 

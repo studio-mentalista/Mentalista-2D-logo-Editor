@@ -3,7 +3,6 @@
  *
  * Add options for strokeColor
  * Synchroniser les Couleurs;
- * Import @Font-face
  *
  * OnFrame Event -> Animate bezier
  *
@@ -74,7 +73,7 @@ var bezier,
 	smooth = 0,
 	smooth_height = (smooth/100)*height_gap,
 	smooth_width = (smooth/100)*width_gap,
-	strokeWidth = 15,
+	strokeWidth = 11,
 	bezier_debug = false,
 	strokeCap = 'square',
 	blendMode = 'normal';
