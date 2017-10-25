@@ -66,14 +66,13 @@ var scale_index = 1,
 	w_margin = (window.innerWidth-width_gap*logo_w())/2,
 	h_margin = (window.innerHeight-height_gap*logo_h())/2-50,
 	circle = false,
-	grid_color = '#000000',
+	grid_color = '#000000'//'#ae00ff',
 	display_grid = true;
 
 var bezier,
 	nb_bezier = Math.floor(Math.random() * (30 - 1 + 1)) + 1,
 	nb_bezier_max = 100,
 	smooth = 0,
-	tension = true;
 	smooth_height = (smooth/100)*height_gap,
 	smooth_width = (smooth/100)*width_gap,
 	strokeWidth = 15*scale_index,
@@ -98,7 +97,6 @@ var params = {
 	//type: 'algo_1',
 	nb_bezier: nb_bezier,
 	smooth: smooth,
-	tension: tension,
 	strokeWidth : strokeWidth,
 	debug : bezier_debug,
 	blendMode : blendMode,
@@ -173,10 +171,6 @@ bezier.add( params, 'smooth', 0, 100 ).step( 1 ).onChange( function( value ) {
 	smooth = value;
 	smooth_height = (value/100)*height_gap;
 	smooth_width = (value/100)*width_gap;
-	Update();
-}).listen();
-bezier.add( params, 'tension').onChange( function( value ) {
-	tension = value;
 	Update();
 }).listen();
 bezier.add( params, 'strokeWidth', 1, 31 ).step( 1 ).onChange( function( value ) {
@@ -460,34 +454,26 @@ function draw_bezier(p1,p2,orientation){
 	var bezierX = coord1[1]-coord2[1];
 	var bezierY = coord1[0]-coord2[0];
 
-	var process_bezierX = 1;
-	var process_bezierY = 1;
-
-	if(tension == true){
-		process_bezierX = Math.abs(bezierX);
-		process_bezierY = Math.abs(bezierY);
-	}
-
 	if (bezierX > 0){
 		//console.log("direction du bezier : <----");
 		
 		if (bezierY > 0){
 			//console.log("direction du bezier : monte");
 			if (orientation == 0){
-				handleIn = new Point(0, height_gap*process_bezierY-smooth_height);
-				handleOut = new Point(-width_gap*process_bezierX+smooth_width, 0);
+				handleIn = new Point(0, height_gap*Math.abs(bezierY)-smooth_height);
+				handleOut = new Point(-width_gap*Math.abs(bezierX)+smooth_width, 0);
 			} else {
-				handleIn = new Point(width_gap*process_bezierX-smooth_width,0);
-				handleOut = new Point(0,-height_gap*process_bezierY+smooth_height);
+				handleIn = new Point(width_gap*Math.abs(bezierX)-smooth_width,0);
+				handleOut = new Point(0,-height_gap*Math.abs(bezierY)+smooth_height);
 			}
 		} else if (bezierY < 0){
 			//console.log("direction du bezier : descend");
 			if (orientation == 0){
-				handleOut = new Point(0, height_gap*process_bezierY-smooth_height);
-				handleIn = new Point(width_gap*process_bezierX-smooth_width, 0);
+				handleOut = new Point(0, height_gap*Math.abs(bezierY)-smooth_height);
+				handleIn = new Point(width_gap*Math.abs(bezierX)-smooth_width, 0);
 			} else {
-				handleOut = new Point(-width_gap*process_bezierX+smooth_width,0);
-				handleIn = new Point(0,-height_gap*process_bezierY+smooth_height);
+				handleOut = new Point(-width_gap*Math.abs(bezierX)+smooth_width,0);
+				handleIn = new Point(0,-height_gap*Math.abs(bezierY)+smooth_height);
 			}
 		} else if (bezierY == 0){
 			//console.log("direction du bezier : static");
@@ -501,20 +487,20 @@ function draw_bezier(p1,p2,orientation){
 		if (bezierY > 0){
 			//console.log("direction du bezier : monte");
 			if (orientation == 0){
-				handleIn = new Point(0,height_gap*process_bezierY-smooth_height);
-				handleOut = new Point(width_gap*process_bezierX-smooth_width,0);
+				handleIn = new Point(0,height_gap*Math.abs(bezierY)-smooth_height);
+				handleOut = new Point(width_gap*Math.abs(bezierX)-smooth_width,0);
 			} else {
-				handleIn = new Point(-width_gap*process_bezierX+smooth_width, 0);
-				handleOut = new Point(0, -height_gap*process_bezierY+smooth_height);
+				handleIn = new Point(-width_gap*Math.abs(bezierX)+smooth_width, 0);
+				handleOut = new Point(0, -height_gap*Math.abs(bezierY)+smooth_height);
 			}
 		} else if (bezierY < 0){
 			//console.log("direction du bezier : descend");
 			if (orientation == 0){
-				handleOut = new Point(0, height_gap*process_bezierY-smooth_height);
-				handleIn = new Point(-width_gap*process_bezierX+smooth_width, 0);
+				handleOut = new Point(0, height_gap*Math.abs(bezierY)-smooth_height);
+				handleIn = new Point(-width_gap*Math.abs(bezierX)+smooth_width, 0);
 			} else {
-				handleOut = new Point(width_gap*process_bezierX-smooth_width, 0);
-				handleIn = new Point(0, -height_gap*process_bezierY+smooth_height);
+				handleOut = new Point(width_gap*Math.abs(bezierX)-smooth_width, 0);
+				handleIn = new Point(0, -height_gap*Math.abs(bezierY)+smooth_height);
 			}
 		} else if (bezierY == 0){
 			//console.log("direction du bezier : static");
