@@ -13,6 +13,7 @@
  */
 
 var logo_shape;
+var gridPath,text;
 
 var old_logo_shape = [
         ["0,1","0,2","0,3"],
@@ -40,7 +41,7 @@ var test_logo_shape = [
         ["7,1","7,2","7,3"]
 ];
 
-logo_shape = new_logo_shape; //choisir la forme de base
+logo_shape = new_logo_shape;
 
 var logo_width,logo_height;
 
@@ -67,6 +68,7 @@ var scale_index = 1,
 	h_margin = (window.innerHeight-height_gap*logo_h())/2-50,
 	circle = false,
 	grid_color = '#000000',
+	first_stop_color = '#ffffff',
 	display_grid = true;
 
 var bezier,
@@ -94,8 +96,8 @@ var params = {
 	path_size:  path_size,
 	shape: 'square',
 	color: grid_color,
+	first_stop_color: first_stop_color,
 	display_grid: display_grid,
-	//type: 'algo_1',
 	nb_bezier: nb_bezier,
 	smooth: smooth,
 	tension: tension,
@@ -118,7 +120,10 @@ global_.addColor( params, 'color').onChange( function( value ) {
 	grid_color = value;
 	Update();
 }).listen();
-
+global_.addColor( params, 'first_stop_color').onChange( function( value ) {
+	first_stop_color = value;
+	Update();
+}).listen();
 global_.open();
 
 var grid = gui.addFolder('Grid');
@@ -208,6 +213,7 @@ function randomize(){
 	circle = Math.random() >= 0.5;
 	params.shape = circle == true ? "circle" : "square";
 	
+	first_stop_color = '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
 	grid_color = '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
 	//params.grid_color = grid_color;
 	//console.log(params.grid_color);
@@ -262,9 +268,8 @@ function Init(){
 
 function Update(){
 	project.activeLayer.removeChildren();
-	
+
 	for(var i=0; i<nb_bezier; i++){
-		//Ajouter la possibilité d'autres formes
 		draw_bezier(save_rand_coord[i][0],save_rand_coord[i][1],save_rand_coord[i][2]);
 	}
 
@@ -282,7 +287,24 @@ function onFrame(event) {
 	//console.log(event.delta);
 	
 	//TODO animate bezier
-	
+	//Update();
+
+	//gridPath.rotate(3);
+	//text.rotate(3);
+	//bezier.rotate(3);
+
+	for (var i = 0; i < 32; i++) {
+		var item = project.activeLayer.children[i];
+		
+		//item.rotate(3);
+
+		/*item.position.x += item.bounds.width / 20;
+
+		if (item.bounds.left > view.size.width) {
+			item.position.x = -item.bounds.width;
+		}*/
+	}
+
 	/*project.activeLayer.removeChildren();
 	
 	var paths = project.currentStyle.activeLayer.selectAll();
@@ -300,19 +322,6 @@ function onFrame(event) {
   	for (var i in gui.__controllers) {
     	gui.__controllers[i].updateDisplay();
   	}*/
-
-
-	//Update();
-
-	/*for(var i=0; i<nb_bezier; i++){	
-		draw_bezier(save_rand_coord[i][0],save_rand_coord[i][1],save_rand_coord[i][2]);
-	}
-	
-	if (display_grid == true){
-		draw_grid();
-	}
-	draw_typo();*/
-
 
 }
 
@@ -344,7 +353,7 @@ function draw_grid(){
 			var coord = logo_shape[i][j];
 			var coord = coord.split(",");
 
-			var gridPath = path.clone();
+			gridPath = path.clone();
 			if(circle == true){
 				gridPath.smooth({ type: 'continuous' });
 			}
@@ -354,6 +363,8 @@ function draw_grid(){
 	}
 	path.remove();
 	
+	console.log(gridPath);
+
 	//console.log("width : "+width_gap*coord[1]+" height :"+height_gap*coord[0]);
 }
 
@@ -367,7 +378,7 @@ function draw_typo(){
 	});*/
 		
 	//TODO add typo
-	var text = new PointText({
+	text = new PointText({
 	    point: [w_margin+width_gap*(logo_w()/2), h_margin+height_gap*logo_h()+logo_margin_top+marge_sup],
 	    content: 'mentalista',
 	    fillColor: grid_color,
@@ -386,8 +397,10 @@ function load(){
 	var file_name = "bezier";
 	var nbFiles = 1;
 	
+	//problème de cache lié à l'url de charge
+
 	for(var i=1; i<=nbFiles; i++){
-		$.ajax({url: url+file_name+".json",dataType:"json"})
+		$.ajax({url: url+file_name+".json",cache:false,dataType:"json"})
 			.fail(function(){alert("fail loading : "+file_name+i+".json");})
 			.done(function(data){
 			
@@ -555,12 +568,14 @@ function draw_bezier(p1,p2,orientation){
 
 	bezier = new Path(p1_segment, p2_segment);
 
+	//var randomStop = '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
+
 	bezier.strokeColor = {
 		gradient: {
-        	stops: ['white', grid_color]
-    	},
-    	origin: p1_point,
-    	destination: p2_point
+			stops: [first_stop_color, grid_color]
+		},
+		origin: p1_point,
+		destination: p2_point
 	};
 	
 	//bezier.strokeColor.gradient.stops[0].color.alpha = 0.0
