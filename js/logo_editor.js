@@ -4,18 +4,21 @@
  * Add options for strokeColor (add stops + first gradient color)
  * Synchroniser les Couleurs;
  * problème typo not loading
+ * DashOffset
+ * Vectorisation de la typo à l'export ?
  *
- * OnFrame Event -> Animate bezier
+ * Vitesse + type d'animation [easeIn]
  *
- * => API
+ * => API > Ex : https://platform.ifttt.com/docs/api_reference
  * => Mur de pensée
  * => Saving params value > https://workshop.chromeexperiments.com/examples/gui/#5--Saving-Values
+ * 
  */
 
 var logo_shape;
 var gridPath,text;
 var json_file = "bezier";
-var dashIndice = 10;
+var dashIndice = 0;
 
 var old_logo_shape = [
         ["0,1","0,2","0,3"],
@@ -65,7 +68,7 @@ function logo_w(){
 var scale_index = 1,
 	width_gap = 80,
 	height_gap = 80,
-	path_size = 14,
+	path_size = 15,
 	w_margin = (window.innerWidth-width_gap*logo_w())/2,
 	h_margin = (window.innerHeight-height_gap*logo_h())/2-50,
 	circle = false,
@@ -80,7 +83,7 @@ var bezier,
 	tension = true;
 	smooth_height = (smooth/100)*height_gap,
 	smooth_width = (smooth/100)*width_gap,
-	strokeWidth = 15*scale_index,
+	strokeWidth = path_size*scale_index,
 	bezier_debug = false,
 	strokeCap = 'square',
 	blendMode = 'normal';
@@ -106,6 +109,7 @@ var params = {
 	strokeWidth : strokeWidth,
 	debug : bezier_debug,
 	blendMode : blendMode,
+	reset: function(){resetAnimation();},
 	json : json_file,
 	load: function(){load();},
 	random: function(){randomize();},
@@ -156,6 +160,7 @@ grid.add( params, 'height_gap', 10, 300 ).step( 1 ).onChange( function( value ) 
 }).listen();
 grid.add( params, 'path_size', 1, 30 ).step( 1 ).onChange( function( value ) {
 	path_size = value;
+	//problème Height quand size est > 1
 	Update();
 }).listen();
 grid.add(params, 'shape', [ 'square', 'circle'] ).onChange( function(value){
@@ -196,6 +201,11 @@ bezier.add( params, 'debug').onChange( function( value ) {
 	Update();
 }).listen();
 bezier.open();
+
+var animation = gui.addFolder('Animation');
+animation.add( params, 'reset');
+animation.open();
+
 gui.add( params, 'json').onFinishChange( function( value ) {
 	json_file = value;
 	alert(json_file);
@@ -346,7 +356,9 @@ function Init(){
 	Update();
 	//draw_typo();
 
-	//http://api.mentalista.fr/logo?w=200
+	//http://api.mentalista.fr/logo?color=aeff00&size=2
+	//TODO desactiver les dashs
+	//dashIndice = null;
 	//svg_to_uri();
 };
 
@@ -389,6 +401,8 @@ function onFrame(event) {
   	*/
 }
 
+function resetAnimation(){dashIndice=10;}
+
 /**********************************************/
 
 function new_array_coord(){
@@ -408,7 +422,7 @@ function draw_grid(){
 		point: [0,0],
 		size: [path_size, path_size],
 		fillColor: grid_color,
-		strokeColor: grid_color
+		//strokeColor: grid_color
 	});
 
 	for(var i = 0; i < logo_shape.length; i++) {
@@ -426,23 +440,17 @@ function draw_grid(){
 		}
 	}
 	path.remove();
-	
-	//console.log(gridPath);
-	//console.log("width : "+width_gap*coord[1]+" height :"+height_gap*coord[0]);
 }
 
 function draw_typo(){
-	//Load mentalista.svg
-	var logo_margin_top = 87;
-	var marge_sup = 27;
-	
-	/*var typo = paper.project.importSVG("svg/mentalista.svg", function(item) {
-		item.position = new Point(w_margin+width_gap*(logo_w()/2), h_margin+height_gap*logo_h()+logo_margin_top);
-	});*/
-		
-	//TODO add typo
+	//var typo = paper.project.importSVG("svg/mentalista.svg", function(item) {
+	//	item.position = new Point(w_margin+width_gap*(logo_w()/2), h_margin+height_gap*logo_h()+logo_margin_top);
+	//});
+
+	var logo_margin_top = 114;
+
 	text = new PointText({
-	    point: [w_margin+width_gap*(logo_w()/2), h_margin+height_gap*logo_h()+logo_margin_top+marge_sup],
+	    point: [w_margin+width_gap*(logo_w()/2), h_margin+height_gap*logo_h()+logo_margin_top],
 	    content: 'mentalista',
 	    fillColor: grid_color,
 	    fontFamily: 'Mentalista Grotesque',
@@ -455,14 +463,13 @@ function draw_typo(){
 function load(){
 
 	//TODO load curve from .json
-
 	var url = "json/";
 	var file_name = json_file;
-	var nbFiles = 1;
+	//var nbFiles = 1;
 	
 	//problème de cache lié à l'url de charge
 
-	for(var i=1; i<=nbFiles; i++){
+	//for(var i=1; i<=nbFiles; i++){
 		$.ajax({url: url+file_name+".json",cache:false,dataType:"json"})
 			.fail(function(){alert("fail loading : "+file_name+".json");})
 			.done(function(data){
@@ -499,26 +506,28 @@ function load(){
 			nb_bezier = loadedData.bezier.length;
 			params.nb_bezier = nb_bezier;
 			
+			dashIndice = 0;
+
 			Update();
 			
 			//newDataset.label.push(myData.ID[0].name + " Channel: " + myData.ID[0].Channel);
 			//newDataset.label.push("Channel " + loadedData.ID[0].Channel);
 			
 		});
-	};
+	//};
 }
 
 function svg_to_uri(){
 	var svg_to_uri = project.exportSVG({ asString: true });
 	$("body").text(svg_to_uri);
 	
-	//manque la typo ->
+	//manque la typo ?
 }
 
 function export_logo(){
 	var d = new Date();
 	
-	//desactiver les dash
+	//desactive les dashs
 	dashIndice = null;
 	Update();
 
