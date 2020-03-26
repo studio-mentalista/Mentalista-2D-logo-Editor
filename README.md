@@ -6,8 +6,5 @@ The visual identity of [mentalista](https://mentalista.fr/en/) uses brain waves 
 
 The color, scale and even the thickness of the lines and dots are adjustable in an [editor accessible online](http://lab.mentalista.fr/logo/2d/logo_editor.html). It allows to generate the logo according to the needs of the graphic charter.
 
-###### Img
-
-![Export](img/1.png)
-![Export](img/6.png)
-![Export](img/9.png)
+###### Gallery
+![Interface](readme-assets/interface.png)

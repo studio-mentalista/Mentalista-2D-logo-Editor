@@ -1,23 +1,24 @@
-/*
- * TODO
- *
- * Add options for strokeColor (add stops + first gradient color)
- * Synchroniser les Couleurs;
- * problème typo not loading
- * DashOffset
- * Vectorisation de la typo à l'export ?
- *
- * Vitesse + type d'animation [easeIn]
- *
- * => API > Ex : https://platform.ifttt.com/docs/api_reference
- * => Mur de pensée
- * => Saving params value > https://workshop.chromeexperiments.com/examples/gui/#5--Saving-Values
+/* ----------------------------------------------------------------------------------------------------
+ * Mentalista Logo Editor, 2017
+ * Created: 16/09/17 by Bastien DIDIER
  * 
+ * Mentalista logo generation interface
+ * https://lab.mentalista.fr/logo/2d/logo_editor.html
+ *
+ * TODO
+ * Typography vectorization for export
+ * Animation Export (webm/gif)
+ * Speed + Animation type [easeIn]
+ *
+ * Update: 03/26/20 Current V.1.1
+ * ----------------------------------------------------------------------------------------------------
  */
+
+var canvas = document.getElementById('logoCanvas');
 
 var logo_shape;
 var gridPath,text;
-var json_file = "bezier";
+var json_file = "test.json";
 var dashIndice = 0;
 
 var old_logo_shape = [
@@ -72,6 +73,7 @@ var scale_index = 1,
 	w_margin = (window.innerWidth-width_gap*logo_w())/2,
 	h_margin = (window.innerHeight-height_gap*logo_h())/2-50,
 	circle = false,
+	background_color = '#ffffff',
 	grid_color = '#000000',
 	first_stop_color = '#ffffff',
 	display_grid = true;
@@ -100,6 +102,7 @@ var params = {
 	height_gap: height_gap,
 	path_size:  path_size,
 	shape: 'square',
+	background: background_color,
 	color: grid_color,
 	first_stop_color: first_stop_color,
 	display_grid: display_grid,
@@ -112,7 +115,9 @@ var params = {
 	reset: function(){resetAnimation();},
 	json : json_file,
 	load: function(){load();},
+	random_data: function(){random_data();},
 	random: function(){randomize();},
+	render: function(){export_animation();},
 	export: function(){export_logo();}
 };
 
@@ -122,6 +127,10 @@ var global_ = gui.addFolder('Global');
 global_.add( params, 'scale', 0.1, 4).step( 0.1 ).onChange( function( value ) {
 	scale_index = value;
 	Update();
+}).listen();
+global_.addColor( params, 'background').onChange( function( value ) {
+	background_color = value;
+	canvas.style.backgroundColor = background_color;
 }).listen();
 global_.addColor( params, 'color').onChange( function( value ) {
 	grid_color = value;
@@ -204,25 +213,36 @@ bezier.open();
 
 var animation = gui.addFolder('Animation');
 animation.add( params, 'reset');
+animation.add( params, 'render');
 animation.open();
 
-gui.add( params, 'json').onFinishChange( function( value ) {
+var dataFolder = gui.addFolder('Data');
+dataFolder.add( params, 'json').onFinishChange( function( value ) {
 	json_file = value;
 	alert(json_file);
 }).listen();
-gui.add( params, 'load');
+dataFolder.add( params, 'load');
+dataFolder.add( params, 'random_data');
+dataFolder.open();
+
 gui.add( params, 'random');
 gui.add( params, 'export');
 
 /**********************************************/
 
 function randomize(){
-	/*width_gap = Math.floor(Math.random() * (200 - 10 + 1)) + 10;	
-	params.width_gap = width_gap;
 	
-	height_gap = Math.floor(Math.random() * (200 - 100 + 1)) + 10;
-	params.height_gap = height_gap;*/
+	//uncomment if you want to randomize the logo width
+	//width_gap = Math.floor(Math.random() * (200 - 10 + 1)) + 10;	
+	//params.width_gap = width_gap;
 	
+	//uncomment if you want to randomize the logo height
+	//height_gap = Math.floor(Math.random() * (200 - 100 + 1)) + 10;
+	//params.height_gap = height_gap;
+	
+	//w_margin = (window.innerWidth-width_gap*logo_w())/2;
+	//h_margin = (window.innerHeight-height_gap*logo_h())/2-50;
+
 	path_size = Math.floor(Math.random() * (30 - 1 + 1)) + 1;
 	params.path_size = path_size;
 	
@@ -230,30 +250,28 @@ function randomize(){
 	params.shape = circle == true ? "circle" : "square";
 	
 	first_stop_color = '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
+	params.first_stop_color = first_stop_color;
+
 	grid_color = '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6);
-	//params.grid_color = grid_color;
-	//console.log(params.grid_color);
-	//la valeur est bien enregistrée mais ne mais pas à jour 'color' peut-être parse que .listen() n'existe pas pour addColor();
+	params.color = grid_color;
 	
-	/*colorController.onChange(function(value) {
-	    colorController.__input.style.color = value;
-	});*/
-	
-	smooth = Math.floor(Math.random() * (30 - -10 + 1)) + -10;
+	smooth = Math.floor(Math.random() * (30 - 10 + 1)) + 10;
 	params.smooth = smooth;
 	
 	strokeWidth = Math.floor(Math.random() * (31 - 1 + 1)) + 1;
 	params.strokeWidth = strokeWidth;
-	
-	w_margin = (window.innerWidth-width_gap*logo_w())/2;
-	h_margin = (window.innerHeight-height_gap*logo_h())/2-50;
 
 	nb_bezier = Math.floor(Math.random() * (30 - 1 + 1)) + 1;
 	params.nb_bezier = nb_bezier;
 	
 	dashIndice=0;
 
-	new_array_coord();	
+	new_array_coord();
+	Update();
+}
+
+function random_data(){
+	new_array_coord();
 	Update();
 }
 
@@ -268,33 +286,33 @@ function randCoord(){
 //API
 
 //var URL = window.location.href;
-//?size=2&color=0aa0ff&load=bezier1
+//?size=2&color=0aa0ff&load=test.json
 
-function api(){
-	
-	var qSize = getParameterByName('size');
-	//scale_index = qSize!=null?qSize:scale_index;
-
-	/***** GET COLOR ******/
-	var qColor = getParameterByName('color');
-
-	if(qColor!=null){
-		if(/^#/i.test(qColor)){
-			if(/^#[0-9A-F]{6}$/i.test(qColor)){
-				grid_color=qColor;
-			}
-		} else {
-			if(/^#[0-9A-F]{6}$/i.test('#'+qColor)){
-				grid_color="#"+qColor;
-			}
-		}
-	}	
-	/***** END : GET COLOR ******/
-
-	//query('color',grid_color);
-
-	//var queryJson = getParameterByName('json');
-}
+//function api(){
+//	
+//	var qSize = getParameterByName('size');
+//	//scale_index = qSize!=null?qSize:scale_index;
+//
+//	/***** GET COLOR ******/
+//	var qColor = getParameterByName('color');
+//
+//	if(qColor!=null){
+//		if(/^#/i.test(qColor)){
+//			if(/^#[0-9A-F]{6}$/i.test(qColor)){
+//				grid_color=qColor;
+//			}
+//		} else {
+//			if(/^#[0-9A-F]{6}$/i.test('#'+qColor)){
+//				grid_color="#"+qColor;
+//			}
+//		}
+//	}	
+//	/***** END : GET COLOR ******/
+//
+//	//query('color',grid_color);
+//
+//	//var queryJson = getParameterByName('json');
+//}
 
 /*function query(type,to){
 	var q = getParameterByName(type);
@@ -326,17 +344,23 @@ function api(){
 
 ********** API PARAMS ***************/
 
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
+//function getParameterByName(name, url) {
+//    if (!url) url = window.location.href;
+//    name = name.replace(/[\[\]]/g, "\\$&");
+//    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+//        results = regex.exec(url);
+//    if (!results) return null;
+//    if (!results[2]) return '';
+//    return decodeURIComponent(results[2].replace(/\+/g, " "));
+//}
 
 /**********************************************/
+
+//function svg_to_uri(){
+//	var svg_to_uri = project.exportSVG({ asString: true });
+//	$("body").text(svg_to_uri);	
+	//manque la typo ?
+//}
 
 //INIT
 window.load = Init();
@@ -350,7 +374,7 @@ window.onresize = function() {
 
 function Init(){
 
-	api();
+	//api();
 
 	new_array_coord();
 	Update();
@@ -381,24 +405,10 @@ function onFrame(event) {
 	//console.log(event.count);
 	//console.log(event.time);
 	//console.log(event.delta);
-	
-	//TODO animate bezier
-	//desactiver la fonction ?
 
 	dashIndice=dashIndice+3;
 	smooth++;
-	Update();
-
-	
-	/*
-	requestAnimationFrame(update);
- 	fizzyText.noiseStrength = Math.cos(Date.getTime());
-
-  	// Iterate over all controllers
-  	for (var i in gui.__controllers) {
-    	gui.__controllers[i].updateDisplay();
-  	}
-  	*/
+	Update();	
 }
 
 function resetAnimation(){dashIndice=10;}
@@ -406,6 +416,9 @@ function resetAnimation(){dashIndice=10;}
 /**********************************************/
 
 function new_array_coord(){
+
+	save_rand_coord.length = 0
+
 	//Amélioration : détecter les béziers qui sont sur le même point
 	for(var i=0; i<nb_bezier_max; i++){
 		save_rand_coord.push(new Array());
@@ -421,21 +434,17 @@ function draw_grid(){
 	var path = new Path.Rectangle({
 		point: [0,0],
 		size: [path_size, path_size],
-		fillColor: grid_color,
-		//strokeColor: grid_color
+		fillColor: grid_color
 	});
 
 	for(var i = 0; i < logo_shape.length; i++) {
 		for(var j = 0; j < logo_shape[i].length; j++) {
-			
-			var coord = logo_shape[i][j];
-			var coord = coord.split(",");
-
+			var coord = logo_shape[i][j].split(",");
+			//var coord = coord.split(",");
 			gridPath = path.clone();
 			if(circle == true){
 				gridPath.smooth({ type: 'continuous' });
 			}
-
 			gridPath.position = new Point(w_margin+width_gap*coord[1], h_margin+height_gap*coord[0]);
 		}
 	}
@@ -443,102 +452,90 @@ function draw_grid(){
 }
 
 function draw_typo(){
-	//var typo = paper.project.importSVG("svg/mentalista.svg", function(item) {
+	//var typo = paper.project.importSVG("font/mentalista_grotesque/logo_typo-mentalista.svg", function(item) {
 	//	item.position = new Point(w_margin+width_gap*(logo_w()/2), h_margin+height_gap*logo_h()+logo_margin_top);
 	//});
 
 	var logo_margin_top = 114;
 
 	text = new PointText({
-	    point: [w_margin+width_gap*(logo_w()/2), h_margin+height_gap*logo_h()+logo_margin_top],
-	    content: 'mentalista',
-	    fillColor: grid_color,
-	    fontFamily: 'Mentalista Grotesque',
-	    fontWeight: 'normal',
-	    justification : 'center',
-	    fontSize: 85
+		point: [w_margin+width_gap*(logo_w()/2), h_margin+height_gap*logo_h()+logo_margin_top],
+		content: 'mentalista',
+		fillColor: grid_color,
+		fontFamily: 'Mentalista Grotesque',
+		fontWeight: 'normal',
+		justification : 'center',
+		fontSize: 85
 	});
 }
 
 function load(){
+	$.ajax({
+		url: "data/"+json_file,
+		cache:false,
+		dataType:"json"
+	})
+	.fail(function(){alert("fail loading : "+json_file);})
+	.done(function(data){
 
-	//TODO load curve from .json
-	var url = "json/";
-	var file_name = json_file;
-	//var nbFiles = 1;
-	
-	//problème de cache lié à l'url de charge
+		//console.log(data);
+		
+		nb_bezier = data.bezier.length;
+		params.nb_bezier = nb_bezier;
 
-	//for(var i=1; i<=nbFiles; i++){
-		$.ajax({url: url+file_name+".json",cache:false,dataType:"json"})
-			.fail(function(){alert("fail loading : "+file_name+".json");})
-			.done(function(data){
-			
-			var loadedData = data;
-			console.log(loadedData);
-			
-			//project.importJSON(JSON.stringify(jsonData));
-			
-			//var newDataset = {
-	        //	label: [],
-            //    fill: false,
-			//	borderColor : 	   'rgba(20,'+ color +',20,1)',
-			//	pointBorderColor : 'rgba(0,0,0,0)',
-			//	backgroundColor :  'rgba(0,0,0,0)',
-			//	lineTension: 0.1,
-	        //	data: []
-	        //};
-			
-			//for(var j=0; j<loadedData.Pattern.length; j++){
-			//	newDataset.data.push(loadedData.Pattern[j].FFT_uV);
-			//	config.data.labels.push(loadedData.Pattern[j].FFT_Hz);
-			//}
+		save_rand_coord.length = 0;
 
-			for(var a=0; a<loadedData.bezier.length; a++){
-				
-				save_rand_coord.push(new Array());
-				
-				save_rand_coord[a][0] = loadedData.bezier[a].p1
-				save_rand_coord[a][1] = loadedData.bezier[a].p2
-				save_rand_coord[a][2] = loadedData.bezier[a].orientation
-			}
-			
-			nb_bezier = loadedData.bezier.length;
-			params.nb_bezier = nb_bezier;
-			
-			dashIndice = 0;
+		for(var i=0; i < nb_bezier; i++){
+			save_rand_coord.push(new Array());
+			save_rand_coord[i][0] = data.bezier[i][0];
+			save_rand_coord[i][1] = data.bezier[i][1];
+			save_rand_coord[i][2] = data.bezier[i][2];
+		}
 
-			Update();
-			
-			//newDataset.label.push(myData.ID[0].name + " Channel: " + myData.ID[0].Channel);
-			//newDataset.label.push("Channel " + loadedData.ID[0].Channel);
-			
-		});
-	//};
+		path_size = data.config.path_size;
+		params.path_size = data.config.path_size;
+
+		circle = data.config.shape === 'circle' ? true : false;
+		params.shape = data.config.shape;
+
+		first_stop_color = data.config.first_stop_color;
+		params.first_stop_color = data.config.first_stop_color;
+
+		grid_color = data.config.grid_color;
+		params.color = data.config.grid_color;
+
+		strokeWidth = data.config.strokeWidth;
+		params.strokeWidth = data.config.strokeWidth;
+
+		dashIndice = 0;
+		Update();		
+	});
 }
 
-function svg_to_uri(){
-	var svg_to_uri = project.exportSVG({ asString: true });
-	$("body").text(svg_to_uri);
-	
-	//manque la typo ?
+function export_animation(){
+	alert('TODO');
+	//resetAnimation();
 }
 
 function export_logo(){
 	var d = new Date();
 	
-	//desactive les dashs
+	//deactivate dashs
 	dashIndice = null;
 	Update();
 
-	var svg = project.exportSVG({ asString: true });	
-	downloadDataURI({
-		data: 'data:image/svg+xml;base64,' + btoa(svg),
-		filename: 'mentalista_'+d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()+'.svg'
-	});
+	var svg = project.exportSVG({ asString: true });
+
+	var dataURL = 'data:image/svg+xml;base64,' + btoa(svg);
+	var filename = 'mentalista_'+d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()+'.svg';
+
+	var dl = document.createElement("a");
+	document.body.appendChild(dl); // This line makes it work in Firefox.
+	dl.setAttribute("href", dataURL);
+	dl.setAttribute("download", filename);
+	dl.click();
 }
 
-//À nettoyer
 function draw_bezier(p1,p2,orientation){
 	
 	var coord1 = p1.split(",");
@@ -559,7 +556,6 @@ function draw_bezier(p1,p2,orientation){
 
 	if (bezierX > 0){
 		//console.log("direction du bezier : <----");
-		
 		if (bezierY > 0){
 			//console.log("direction du bezier : monte");
 			if (orientation == 0){
@@ -586,7 +582,6 @@ function draw_bezier(p1,p2,orientation){
 		
 	} else if (bezierX < 0){
 		//console.log("direction du bezier : ---->");
-		
 		if (bezierY > 0){
 			//console.log("direction du bezier : monte");
 			if (orientation == 0){
@@ -612,7 +607,6 @@ function draw_bezier(p1,p2,orientation){
 		}
 	} else if (bezierX == 0) {
 		/*console.log("direction du bezier : Static");
-		
 		if (bezierY > 0){
 			//console.log("direction du bezier : monte");
 			handleIn = p1_point;
@@ -654,6 +648,7 @@ function draw_bezier(p1,p2,orientation){
 		destination: p2_point
 	};
 	
+	//Uncomment to add alpha
 	//bezier.strokeColor.gradient.stops[0].color.alpha = 0.0
 
 	bezier.blendMode = blendMode;
@@ -666,8 +661,7 @@ function draw_bezier(p1,p2,orientation){
 		bezier.strokeCap = 'square';
 	}
 
-	//bezier.dashOffset = dashIndice;
-	bezier.dashArray = [dashIndice,400];
+	bezier.dashArray = [dashIndice,1000];
 
 	if(bezier_debug == true){
 		bezier.fullySelected = true;

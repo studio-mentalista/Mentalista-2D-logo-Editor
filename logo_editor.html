@@ -2,33 +2,28 @@
 <html>
 	<head>
 		<meta charset="UTF-8"/>
-		<title>Mentalista Logo Editor - beta</title>
-		
+		<title>Mentalista Logo Editor</title>
 		<script type="text/javascript" src="js/libs/paper.js"></script>
 		<script type="text/javascript" src="js/libs/dat.gui.min.js"></script>
 		<script type="text/javascript" src="js/libs/jquery.js"></script>
-		<script type="text/javascript" src="js/libs/download-data-uri.js"></script>
 
-		<!-- Define inlined PaperScript associate it with myCanvas -->
-		<script type="text/paperscript" src="js/logo_editor.js" canvas="logoCanvas"></script>
-		<!--script type="text/paperscript" src="js/bezier_editor.js" canvas="logoCanvas"></script-->
+		<script type="text/paperscript" src="js/editor.js" canvas="logoCanvas"></script>
 		
 		<style>
 			@font-face {
-    			font-family: 'Mentalista Grotesque';
-    			src: url('font/mentalista_grotesque/mentalista_grotesque-webfont.woff2') format('woff2'),
-        			 url('font/mentalista_grotesque/mentalista_grotesque-webfont.woff') format('woff');
-    			font-weight: normal;
-    			font-style: normal;
+				font-family: 'Mentalista Grotesque';
+				src: url('font/mentalista_grotesque/mentalista_grotesque-webfont.woff2') format('woff2'),
+					 url('font/mentalista_grotesque/mentalista_grotesque-webfont.woff') format('woff');
+				font-weight: normal;
+				font-style: normal;
 			}
-
 			*{margin: 0;padding: 0;}
 			#logoCanvas {
-		    	position:fixed;
-		    	left:0;
-		    	top:0;
-		    	width:100%;
-		    	height:100%;
+				position:fixed;
+				left:0;
+				top:0;
+				width:100%;
+				height:100%;
 			}
 		</style>
 	</head>
