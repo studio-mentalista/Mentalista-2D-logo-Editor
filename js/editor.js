@@ -7,7 +7,7 @@
  *
  * TODO
  * Typography vectorization for export
- * Animation Export (webm/gif)
+ * Export as .gif
  * Speed + Animation type [easeIn]
  *
  * Update: 03/26/20 Current V.1.1
@@ -283,85 +283,6 @@ function randCoord(){
 
 /**********************************************/
 
-//API
-
-//var URL = window.location.href;
-//?size=2&color=0aa0ff&load=test.json
-
-//function api(){
-//	
-//	var qSize = getParameterByName('size');
-//	//scale_index = qSize!=null?qSize:scale_index;
-//
-//	/***** GET COLOR ******/
-//	var qColor = getParameterByName('color');
-//
-//	if(qColor!=null){
-//		if(/^#/i.test(qColor)){
-//			if(/^#[0-9A-F]{6}$/i.test(qColor)){
-//				grid_color=qColor;
-//			}
-//		} else {
-//			if(/^#[0-9A-F]{6}$/i.test('#'+qColor)){
-//				grid_color="#"+qColor;
-//			}
-//		}
-//	}	
-//	/***** END : GET COLOR ******/
-//
-//	//query('color',grid_color);
-//
-//	//var queryJson = getParameterByName('json');
-//}
-
-/*function query(type,to){
-	var q = getParameterByName(type);
-	grid_color = q!=null?q:qrid_color;
-}*/
-
-/********* API PARAMS ************** 
-		
-	//1er
-	scale : float
-	grid_color : color
-	load : string [JSON]
-	
-	//2e
-	blendMode : string []
-	strokeWidth : int
-	path_size : int
-	first_stop_color : color
-	shape : string ['square','circle']
-	
-	//3e
-	form : String ['new','old','custom']
-	width_gap : int
-	height_gap : int
-	display_grid : boolean
-	nb_bezier : int
-	smooth : int
-	tension : boolean
-
-********** API PARAMS ***************/
-
-//function getParameterByName(name, url) {
-//    if (!url) url = window.location.href;
-//    name = name.replace(/[\[\]]/g, "\\$&");
-//    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-//        results = regex.exec(url);
-//    if (!results) return null;
-//    if (!results[2]) return '';
-//    return decodeURIComponent(results[2].replace(/\+/g, " "));
-//}
-
-/**********************************************/
-
-//function svg_to_uri(){
-//	var svg_to_uri = project.exportSVG({ asString: true });
-//	$("body").text(svg_to_uri);	
-	//manque la typo ?
-//}
-
 //INIT
 window.load = Init();
 
@@ -374,20 +295,22 @@ window.onresize = function() {
 
 function Init(){
 
-	//api();
-
 	new_array_coord();
 	Update();
 	//draw_typo();
 
-	//http://api.mentalista.fr/logo?color=aeff00&size=2
-	//TODO desactiver les dashs
-	//dashIndice = null;
-	//svg_to_uri();
 };
 
 function Update(){
 	project.activeLayer.removeChildren();
+
+	if(isRecording){
+		var background = new Path.Rectangle({
+			point: [0,0],
+			size: [view.size.width, view.size.height],
+			fillColor: background_color
+		});
+	}
 
 	for(var i=0; i<nb_bezier; i++){
 		draw_bezier(save_rand_coord[i][0],save_rand_coord[i][1],save_rand_coord[i][2]);
@@ -401,17 +324,48 @@ function Update(){
 	project.activeLayer.scale(scale_index);
 };
 
+var waiting = 0;
 function onFrame(event) {
 	//console.log(event.count);
 	//console.log(event.time);
 	//console.log(event.delta);
 
+	if(isRecording && waiting < 10){
+		dashIndice=0;
+		waiting++;
+		Update();
+		if(waiting == 5){
+			console.log("start Recording…");
+			startRecording();
+		}
+		return;
+	}
+
+	if(isRecording && dashIndice > 500){
+		console.log("stop Recording…");
+		stopRecording();
+		MediaDownload();
+		isRecording = false;
+	}
+
 	dashIndice=dashIndice+3;
 	smooth++;
-	Update();	
+	Update();
 }
 
-function resetAnimation(){dashIndice=10;}
+function resetAnimation(){
+
+	dashIndice = 0;
+	Update();
+}
+
+function export_animation(){
+	if (isRecording == false){
+		resetAnimation();
+		waiting = 0;
+		isRecording = true;
+	}
+}
 
 /**********************************************/
 
@@ -510,11 +464,6 @@ function load(){
 		dashIndice = 0;
 		Update();		
 	});
-}
-
-function export_animation(){
-	alert('TODO');
-	//resetAnimation();
 }
 
 function export_logo(){
