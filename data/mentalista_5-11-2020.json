@@ -1,0 +1,151 @@
+{
+  "config": {
+    "shape": "***************************,***************************,***************************,***************************",
+    "gap": {
+      "col": 24,
+      "row": 100
+    },
+    "pointWidth": 26,
+    "strokeWidth": 25,
+    "blendMode": "normal",
+    "color": "#b8e448",
+    "alternateColor": "#d7172c",
+    "isRounded": false,
+    "isGridDisplayed": true,
+    "isTypoDisplayed": false,
+    "isAlpha": false,
+    "isGradient": true
+  },
+  "bezier": [
+    {
+      "p1": "3,9",
+      "p2": "1,20",
+      "orientation": 1
+    },
+    {
+      "p1": "0,10",
+      "p2": "2,5",
+      "orientation": 1
+    },
+    {
+      "p1": "1,5",
+      "p2": "1,19",
+      "orientation": 1
+    },
+    {
+      "p1": "1,13",
+      "p2": "1,10",
+      "orientation": 0
+    },
+    {
+      "p1": "2,25",
+      "p2": "0,26",
+      "orientation": 0
+    },
+    {
+      "p1": "3,18",
+      "p2": "2,1",
+      "orientation": 1
+    },
+    {
+      "p1": "1,13",
+      "p2": "3,3",
+      "orientation": 1
+    },
+    {
+      "p1": "2,25",
+      "p2": "0,8",
+      "orientation": 0
+    },
+    {
+      "p1": "2,2",
+      "p2": "3,11",
+      "orientation": 1
+    },
+    {
+      "p1": "1,14",
+      "p2": "2,25",
+      "orientation": 0
+    },
+    {
+      "p1": "3,7",
+      "p2": "3,6",
+      "orientation": 0
+    },
+    {
+      "p1": "2,22",
+      "p2": "3,1",
+      "orientation": 0
+    },
+    {
+      "p1": "0,10",
+      "p2": "1,18",
+      "orientation": 0
+    },
+    {
+      "p1": "3,26",
+      "p2": "0,17",
+      "orientation": 1
+    },
+    {
+      "p1": "0,19",
+      "p2": "2,26",
+      "orientation": 1
+    },
+    {
+      "p1": "2,19",
+      "p2": "3,7",
+      "orientation": 0
+    },
+    {
+      "p1": "1,10",
+      "p2": "1,11",
+      "orientation": 1
+    },
+    {
+      "p1": "1,22",
+      "p2": "0,22",
+      "orientation": 1
+    },
+    {
+      "p1": "1,16",
+      "p2": "3,16",
+      "orientation": 0
+    },
+    {
+      "p1": "1,25",
+      "p2": "3,5",
+      "orientation": 0
+    },
+    {
+      "p1": "2,1",
+      "p2": "2,26",
+      "orientation": 0
+    },
+    {
+      "p1": "2,15",
+      "p2": "3,8",
+      "orientation": 1
+    },
+    {
+      "p1": "3,7",
+      "p2": "3,10",
+      "orientation": 1
+    },
+    {
+      "p1": "0,6",
+      "p2": "2,21",
+      "orientation": 1
+    },
+    {
+      "p1": "1,11",
+      "p2": "0,3",
+      "orientation": 1
+    },
+    {
+      "p1": "0,20",
+      "p2": "1,11",
+      "orientation": 1
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "config": {
+    "pointWidth": 20,
+    "isRounded": true,
+    "alternateColor": "#00ffff",
+    "color": "#0000ff",
+    "strokeWidth": 15
+  },
+  "bezier": [
+    {
+        "p1": "1,4",
+        "p2": "1,2",
+        "orientation": 1
+    },
+    {
+        "p1": "2,1",
+        "p2": "2,0",
+        "orientation": 0
+    },
+    {
+        "p1": "1,3",
+        "p2": "1,2",
+        "orientation": 1
+    },
+    {
+        "p1": "0,3",
+        "p2": "1,1",
+        "orientation": 0
+    },
+    {
+        "p1": "0,2",
+        "p2": "0,1",
+        "orientation": 0
+    },
+    {
+        "p1": "2,3",
+        "p2": "1,1",
+        "orientation": 1
+    },
+    {
+        "p1": "2,1",
+        "p2": "1,1",
+        "orientation": 1
+    },
+    {
+        "p1": "2,4",
+        "p2": "3,3",
+        "orientation": 1
+    },
+    {
+        "p1": "1,0",
+        "p2": "3,3",
+        "orientation": 1
+    },
+    {
+        "p1": "3,1",
+        "p2": "1,4",
+        "orientation": 0
+    },
+    {
+        "p1": "2,3",
+        "p2": "3,3",
+        "orientation": 0
+    },
+    {
+        "p1": "1,0",
+        "p2": "1,1",
+        "orientation": 0
+    },
+    {
+        "p1": "1,1",
+        "p2": "2,3",
+        "orientation": 0
+    },
+    {
+        "p1": "1,4",
+        "p2": "3,2",
+        "orientation": 0
+    },
+    {
+        "p1": "3,1",
+        "p2": "2,2",
+        "orientation": 1
+    },
+    {
+        "p1": "0,1",
+        "p2": "2,4",
+        "orientation": 0
+    },
+    {
+        "p1": "3,3",
+        "p2": "1,3",
+        "orientation": 0
+    },
+    {
+        "p1": "3,2",
+        "p2": "0,2",
+        "orientation": 1
+    },
+    {
+        "p1": "2,3",
+        "p2": "2,1",
+        "orientation": 0
+    }
+  ]
+}

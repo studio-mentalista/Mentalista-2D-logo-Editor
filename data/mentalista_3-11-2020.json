@@ -1,0 +1,112 @@
+{
+  "config": {
+    "shape": ".***.,*****,*****,.***.",
+    "pointWidth": 15,
+    "strokeWidth": 24,
+    "blendMode": "normal",
+    "color": "#ba5c70",
+    "alternateColor": "#06217b",
+    "isRounded": true,
+    "isGridDisplayed": true,
+    "isTypoDisplayed": true,
+    "isAlpha": false,
+    "isGradient": true
+  },
+  "bezier": [
+    {
+      "p1": "3,2",
+      "p2": "1,1",
+      "orientation": 1
+    },
+    {
+      "p1": "0,1",
+      "p2": "0,1",
+      "orientation": 0
+    },
+    {
+      "p1": "3,1",
+      "p2": "3,1",
+      "orientation": 1
+    },
+    {
+      "p1": "1,2",
+      "p2": "1,4",
+      "orientation": 1
+    },
+    {
+      "p1": "2,2",
+      "p2": "3,2",
+      "orientation": 1
+    },
+    {
+      "p1": "0,3",
+      "p2": "0,1",
+      "orientation": 1
+    },
+    {
+      "p1": "2,4",
+      "p2": "2,0",
+      "orientation": 1
+    },
+    {
+      "p1": "0,3",
+      "p2": "3,3",
+      "orientation": 0
+    },
+    {
+      "p1": "0,3",
+      "p2": "0,1",
+      "orientation": 1
+    },
+    {
+      "p1": "3,1",
+      "p2": "3,3",
+      "orientation": 1
+    },
+    {
+      "p1": "3,3",
+      "p2": "2,3",
+      "orientation": 0
+    },
+    {
+      "p1": "3,3",
+      "p2": "2,4",
+      "orientation": 1
+    },
+    {
+      "p1": "2,4",
+      "p2": "2,0",
+      "orientation": 1
+    },
+    {
+      "p1": "1,4",
+      "p2": "3,3",
+      "orientation": 0
+    },
+    {
+      "p1": "0,2",
+      "p2": "2,0",
+      "orientation": 1
+    },
+    {
+      "p1": "3,1",
+      "p2": "2,0",
+      "orientation": 1
+    },
+    {
+      "p1": "1,2",
+      "p2": "1,4",
+      "orientation": 0
+    },
+    {
+      "p1": "2,3",
+      "p2": "2,0",
+      "orientation": 1
+    },
+    {
+      "p1": "1,0",
+      "p2": "1,1",
+      "orientation": 1
+    }
+  ]
+}
